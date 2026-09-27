@@ -82,8 +82,7 @@ ansible-playbook -i inventory/hosts.ini playbooks/install_docker.yml
 ### 6. Acceder a la Aplicación
 Una vez que Ansible termine con éxito, abre tu navegador web e ingresa la IP pública de tu servidor, especificando el puerto 8787:
 
-Plaintext
-http://TU_IP_PUBLICA:8787
+`http://TU_IP_PUBLICA:8787`
 
 ### Limpieza de Recursos (Destrucción)
 Para eliminar toda la infraestructura y evitar cargos innecesarios en Azure, ejecuta:
@@ -95,10 +94,10 @@ terraform destroy
 Espera a que Terraform confirme la eliminación completa. No borres manualmente los archivos de estado.
 
 ### Aprendizajes y Troubleshooting (Solución de Problemas)
-Sincronización de Puertos (Azure NSG vs Docker): Los puertos mapeados en los playbooks de Ansible (ej. ports: - "8787:8080") deben estar explícitamente permitidos en el Network Security Group (NSG) de Terraform. Se usó la propiedad destination_port_ranges = ["80", "8787"] para abrir múltiples puertos en una misma regla.
+**Sincronización de Puertos (Azure NSG vs Docker):** Los puertos mapeados en los playbooks de Ansible (ej. ports: - "8787:8080") deben estar explícitamente permitidos en el Network Security Group (NSG) de Terraform. Se usó la propiedad destination_port_ranges = ["80", "8787"] para abrir múltiples puertos en una misma regla.
 
-Diagnóstico SSH (Connection timed out): Si Ansible falla con un error de Timeout en el puerto 22, indica un bloqueo de red a nivel de firewall en Azure (el NSG no permite la entrada o no está enlazado a la interfaz de red), no un error de contraseña.
+**Diagnóstico SSH (Connection timed out):** Si Ansible falla con un error de Timeout en el puerto 22, indica un bloqueo de red a nivel de firewall en Azure (el NSG no permite la entrada o no está enlazado a la interfaz de red), no un error de contraseña.
 
-Advertencia REMOTE HOST IDENTIFICATION HAS CHANGED: Al destruir y recrear máquinas en la nube (terraform destroy y luego apply), el servidor genera una firma criptográfica distinta aunque mantenga la misma IP. Limpia el registro local ejecutando ssh-keygen -R 'TU_IP_PUBLICA' para evitar que SSH bloquee la conexión por seguridad.
+**Advertencia REMOTE HOST IDENTIFICATION HAS CHANGED:** Al destruir y recrear máquinas en la nube (terraform destroy y luego apply), el servidor genera una firma criptográfica distinta aunque mantenga la misma IP. Limpia el registro local ejecutando ssh-keygen -R 'TU_IP_PUBLICA' para evitar que SSH bloquee la conexión por seguridad.
 
-Sintaxis Inline en Terraform: Al definir reglas de seguridad dentro del recurso azurerm_network_security_group (bloque inline), Terraform hereda implícitamente el contexto. Declarar variables como resource_group_name dentro de ese bloque causa errores de compilación (Unsupported argument).
+**Sintaxis Inline en Terraform:** Al definir reglas de seguridad dentro del recurso azurerm_network_security_group (bloque inline), Terraform hereda implícitamente el contexto. Declarar variables como resource_group_name dentro de ese bloque causa errores de compilación (Unsupported argument).
